@@ -34,17 +34,6 @@ def preprocessing_data(data):
 	data_categ = np.hstack((X_pick, new))
 	return data_categ
 
-def number_of_heroes(data):
-	#Number of heroes
-	ser = pd.Series([])
-	for i in range(1, 6, 1):
-		ser = pd.concat([ser, data['r%d_hero'%(i)]], axis = 0)
-		ser = pd.concat([ser, data['d%d_hero'%(i)]], axis = 0)
-	num_of_heroes = len(ser.unique())
-	print('Number of unique heroes', num_of_heroes)
-	N_max = ser.max()
-	print('Max id of heroes', N_max)
-
 def logis_regr(data):
 	est = KFold(shuffle = True, n_splits = 5, random_state = 241)
 	
