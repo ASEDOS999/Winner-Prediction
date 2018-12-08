@@ -123,17 +123,13 @@ def iterate_matches(matches_filename):
 def create_table(matches_filename, time_point):
 	df = {}
 	fields = None
-	N = 0
 	for match in iterate_matches(matches_filename):
-		#N += 1
 		features = extract_match_features(match, time_point)
 		if fields is None:
 			fields = features.keys()
 			df = {key: [] for key in fields}    
 		for key, value in features.items():
 			df[key].append(value)
-		if N > 1000:
-			break
 	df = pandas.DataFrame.from_records(df).ix[:, fields].set_index('match_id').sort_index()
 	return df
 
