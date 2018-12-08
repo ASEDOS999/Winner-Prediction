@@ -62,7 +62,7 @@ def logis_regr(data):
 
 data = pd.read_csv("feat_new.csv", index_col = 'match_id')
 Y = data['radiant_win']
-data.drop(data.columns[-6:], axis = 1, inplace = True)
+data.drop(data.columns[-2:], axis = 1, inplace = True)
 
 est = KFold(shuffle = True, n_splits = 5, random_state = 241)
 data_categ = preprocessing_data(data.copy())
