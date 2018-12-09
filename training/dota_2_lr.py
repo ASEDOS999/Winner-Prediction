@@ -34,20 +34,6 @@ def preprocessing_data(data):
 	data_categ = np.hstack((X_pick, new))
 	return data_categ
 
-def logis_regr(data):
-	est = KFold(shuffle = True, n_splits = 5, random_state = 241)
-	
-	#Finding new best parameter
-	test = [i for i in range(0, 5, 1)] 
-	acc = []
-	for p in test:
-		clf = LR(penalty = 'l2', C = (4 + p/2)/100)
-		acc.append(np.mean(cvs(clf, data_categ, Y, cv = est, scoring = 'roc_auc')))
-	plt.plot(test, acc, 'ro')
-	plt.plot(test, acc, 'r')
-	plt.title('New best parameter')
-	plt.show()
-
 
 data = pd.read_csv("feat_new.csv", index_col = 'match_id')
 Y = data['radiant_win']
