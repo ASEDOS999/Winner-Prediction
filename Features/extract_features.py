@@ -116,7 +116,7 @@ def iterate_matches(matches_filename):
 				print ('Processed %d matches' % (n+1))
 
 
-def create_table(matches_filename, time_point):
+def create_table(matches_filename, time_point, stop):
 	df = {}
 	fields = None
 	N = 0
@@ -128,16 +128,21 @@ def create_table(matches_filename, time_point):
 			df = {key: [] for key in fields}    
 		for key, value in features.items():
 			df[key].append(value)
-		if N > 30000:
+		if N > stop:
 			break
 	df = pandas.DataFrame.from_records(df).ix[:, fields].set_index('match_id').sort_index()
 	return df
 
 
 if __name__ == '__main__':
+	print('Name of output file:')
+	name = input()
+	print('Number of processed lines:')
+	stop = int(input())
+	print('Please, wait...')
 	parser = argparse.ArgumentParser(description='Extract features from matches data')
 	parser.add_argument('--time', type=int, default=5*60)
 	args = parser.parse_args()
 	
-	features_table = create_table(r'../data/matches.jsonlines.bz2', args.time)
-	features_table.to_csv(r'./feat_5.csv')
+	features_table = create_table(r'../matches.jsonlines.bz2', args.time, stop)
+	features_table.to_csv(name)
