@@ -18,13 +18,9 @@ def extract_match_features(match, time_point=None):
 		(45, 'courier'),
 		(84, 'flying_courier'),
 	]
-	extract_items_count = [
-		(46, 'tpscroll'),
-		(29, 'boots'),
-		(42, 'ward_observer'),
-		(43, 'ward_sentry'),
-	]
 	
+	extract_items_id_count = pandas.read_csv('../data/dictionaries/items.csv')['id'].tolist()
+
 	feats = [
 		('match_id', match['match_id']),
 		('start_time', match['start_time']),
@@ -80,7 +76,7 @@ def extract_match_features(match, time_point=None):
 				('%s_%s_time' % (team, item_name), first_item_time)
 			]
 			
-		for item_id, item_name in extract_items_count:
+		for item_id in extract_items_id_count:
 			item_count = sum([
 				1
 				for player in team_players
@@ -88,7 +84,7 @@ def extract_match_features(match, time_point=None):
 				if entry['item_id'] == item_id
 			])
 			feats += [
-				('%s_%s_count' % (team, item_name), item_count)
+				('%s_%d_count' % (team, item_id), item_count)
 			]
 			
 		team_wards = filter_events([
@@ -119,25 +115,29 @@ def iterate_matches(matches_filename):
 			if (n+1) % 1000 == 0:
 				print ('Processed %d matches' % (n+1))
 
-				
+
 def create_table(matches_filename, time_point):
 	df = {}
 	fields = None
+	N = 0
 	for match in iterate_matches(matches_filename):
+		N += 1
 		features = extract_match_features(match, time_point)
 		if fields is None:
 			fields = features.keys()
 			df = {key: [] for key in fields}    
 		for key, value in features.items():
 			df[key].append(value)
+		if N > 30000:
+			break
 	df = pandas.DataFrame.from_records(df).ix[:, fields].set_index('match_id').sort_index()
 	return df
 
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Extract features from matches data')
-	parser.add_argument('--time', type=int, default=10*60)
+	parser.add_argument('--time', type=int, default=5*60)
 	args = parser.parse_args()
 	
 	features_table = create_table(r'../data/matches.jsonlines.bz2', args.time)
-	features_table.to_csv(r'./feat_new.csv')
+	features_table.to_csv(r'./feat_5.csv')
